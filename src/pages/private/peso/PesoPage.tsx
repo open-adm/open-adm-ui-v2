@@ -24,6 +24,12 @@ export function PesoPage() {
       sortable: true,
     },
     {
+      field: PesoFormField.OrdemExibixao,
+      headerName: 'Ordem de exibição',
+      minWidth: 10,
+      sortable: true,
+    },
+    {
       field: PesoFormField.PesoReal,
       headerName: 'Peso real (kg)',
       minWidth: 150,

@@ -67,12 +67,14 @@ export enum PesoApiRoutePath {
   Atualizar = '/update',
   Criar = '/create',
   Obter = '/get-peso',
+  OrdemExibicao = '/ordem-exibicao',
 }
 
 export enum TamanhoApiRoutePath {
   Atualizar = '/update',
   Criar = '/create',
   Obter = '/get-tamanho',
+  OrdemExibicao = '/ordem-exibicao',
 }
 
 export enum UsuarioApiRoutePath {
@@ -105,6 +107,7 @@ export enum CategoriaApiRoutePath {
   Excluir = '/delete',
   Obter = '/get-categoria',
   Paginacao = '/paginacao',
+  OrdemExibicao = '/ordem-exibicao',
 }
 
 export enum ProdutoApiRoutePath {
@@ -113,6 +116,7 @@ export enum ProdutoApiRoutePath {
   Excluir = '/delete',
   InativarAtivar = '/inativar-ativar',
   Obter = '/get-produto',
+  OrdemExibicao = '/ordem-exibicao',
 }
 
 export enum TabelaDePrecoLegacyApiRoutePath {

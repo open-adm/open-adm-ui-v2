@@ -99,6 +99,17 @@ export function CategoriaFormPage({ action }: IFormTypes) {
         </FormRoot.FormItemRow>
         <FormRoot.FormItemRow xs={12} md={6}>
           <InputApp
+            disabled={readonly}
+            id={CategoriaFormField.OrdemExibixao}
+            label="Ordem de exibição"
+            name={CategoriaFormField.OrdemExibixao}
+            onChange={(_, value) => form.onChange(CategoriaFormField.OrdemExibixao, value === '' ? undefined : Number(value))}
+            type={InputAppType.Number}
+            value={form.values.ordemExibixao ?? ''}
+          />
+        </FormRoot.FormItemRow>
+        <FormRoot.FormItemRow xs={12} md={6}>
+          <InputApp
             checked={Boolean(form.values.inativoEcommerce)}
             disabled={readonly}
             id={CategoriaFormField.InativoEcommerce}

@@ -101,7 +101,9 @@ export function useApi(props: propsUseApi) {
             return;
         }
 
-        const message = error?.response?.data?.[errorResponseKeys.message];
+        const message =
+            error?.response?.data?.[errorResponseKeys.message] ??
+            error?.response?.data?.message;
         if (typeof message === 'string' && message.trim()) {
             snack.show(message, 'error');
 

@@ -12,6 +12,7 @@ export function getComandaPublicaPath(idPublico: string) {
 export enum PrivateRoutePath {
   LinkBio = '/link-da-bio/configuracao',
   LinkBioEventos = '/link-da-bio/eventos',
+  OrdenacaoDaLoja = '/ordenacao-da-loja',
   Banner = '/banners',
   BannerAdicionar = '/banners/adicionar',
   BannerEditar = '/banners/editar',

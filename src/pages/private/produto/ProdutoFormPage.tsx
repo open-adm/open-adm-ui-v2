@@ -19,7 +19,12 @@ import { YupAdapter } from '../../../lib/YupAdapter'
 import { PrivateRoutePath } from '../../../routes/appRoutes'
 import { FormAction, type FormAction as FormActionType } from '../../../types/Form'
 import type { Peso } from '../../../types/PesoTypes'
-import { ProdutoFormField, type Produto, type ProdutoPayload, type ProdutoTabelaDePrecoItem } from '../../../types/ProdutoTypes'
+import {
+  ProdutoFormField,
+  type Produto,
+  type ProdutoPayload,
+  type ProdutoTabelaDePrecoItem,
+} from '../../../types/ProdutoTypes'
 import type { Tamanho } from '../../../types/TamanhoTypes'
 import { imagemBase64Valida, removerPrefixoBase64 } from '../../../utils/imageUtils'
 import { ProdutoEstoqueModal } from './ProdutoEstoqueModal'
@@ -42,6 +47,7 @@ const produtoInitialValues: Partial<Produto> = {
   descricao: '',
   especificacaoTecnica: '',
   novaFoto: '',
+  ordemExibixao: undefined,
   pesos: [],
   referencia: '',
   tamanhos: [],
@@ -53,11 +59,13 @@ const produtoInitialValues: Partial<Produto> = {
 const produtoValidationSchema = new YupAdapter()
   .stringWithTests(
     ProdutoFormField.Descricao,
-    [{
-      name: 'maxLength',
-      message: `A descrição deve ter no máximo ${ProdutoField.MaxLength} caracteres`,
-      test: (value) => !value || value.length <= ProdutoField.MaxLength,
-    }],
+    [
+      {
+        name: 'maxLength',
+        message: `A descrição deve ter no máximo ${ProdutoField.MaxLength} caracteres`,
+        test: (value) => !value || value.length <= ProdutoField.MaxLength,
+      },
+    ],
     'Informe a descrição',
   )
   .string(ProdutoFormField.CategoriaId)
@@ -132,22 +140,24 @@ export function ProdutoFormPage({ action }: ProdutoFormPageProps) {
         especificacaoTecnica: values.especificacaoTecnica,
         itensTabelaDePreco,
         novaFoto: values.novaFoto ? removerPrefixoBase64(values.novaFoto) : undefined,
+        ordemExibixao: values.ordemExibixao,
         pesosIds: values.pesos?.map((peso: Peso) => peso.id) ?? [],
         referencia: values.referencia,
         tabelaDePrecoId,
         tamanhosIds: values.tamanhos?.map((tamanho: Tamanho) => tamanho.id) ?? [],
         vendaSomenteComEstoqueDisponivel: Boolean(values.vendaSomenteComEstoqueDisponivel),
       }
-      const response = action === FormAction.Edit
-        ? await atualizar.fetch(payload)
-        : await criar.fetch(payload)
+      const response =
+        action === FormAction.Edit ? await atualizar.fetch(payload) : await criar.fetch(payload)
       if (response) navigate(PrivateRoutePath.Produto)
     },
   })
 
   useEffect(() => {
     async function iniciar() {
-      const tabelaResponse = await obterTabelaDePreco.fetch(action === FormAction.Create ? undefined : id)
+      const tabelaResponse = await obterTabelaDePreco.fetch(
+        action === FormAction.Create ? undefined : id,
+      )
       if (tabelaResponse?.id) {
         setTabelaDePrecoId(tabelaResponse.id)
         setTabelaDePrecoDescricao(tabelaResponse.descricao)
@@ -166,6 +176,7 @@ export function ProdutoFormPage({ action }: ProdutoFormPageProps) {
           novaFoto: '',
           pesos: response.pesos ?? [],
           referencia: response.referencia ?? '',
+          ordemExibixao: response.ordemExibixao,
           tamanhos: response.tamanhos ?? [],
           vendaSomenteComEstoqueDisponivel: response.vendaSomenteComEstoqueDisponivel,
         })
@@ -191,10 +202,14 @@ export function ProdutoFormPage({ action }: ProdutoFormPageProps) {
     ])
   }
 
-  function atualizarItem(tipo: 'pesoId' | 'tamanhoId', variacaoId: string, values: Partial<ProdutoTabelaDePrecoItem>) {
-    setItensTabelaDePreco((current) => current.map((item) =>
-      item[tipo] === variacaoId ? { ...item, ...values } : item,
-    ))
+  function atualizarItem(
+    tipo: 'pesoId' | 'tamanhoId',
+    variacaoId: string,
+    values: Partial<ProdutoTabelaDePrecoItem>,
+  ) {
+    setItensTabelaDePreco((current) =>
+      current.map((item) => (item[tipo] === variacaoId ? { ...item, ...values } : item)),
+    )
   }
 
   const loading = obter.loading || criar.loading || atualizar.loading || obterTabelaDePreco.loading
@@ -247,18 +262,50 @@ export function ProdutoFormPage({ action }: ProdutoFormPageProps) {
               />
             </FormRoot.FormItemRow>
             <FormRoot.FormItemRow xs={12} md={6}>
-              <InputApp disabled={readonly} id={ProdutoFormField.EspecificacaoTecnica} label="Especificação técnica" maxLength={ProdutoField.MaxLength} onChange={form.onChange} value={form.values.especificacaoTecnica} />
+              <InputApp
+                disabled={readonly}
+                id={ProdutoFormField.EspecificacaoTecnica}
+                label="Especificação técnica"
+                maxLength={ProdutoField.MaxLength}
+                onChange={form.onChange}
+                value={form.values.especificacaoTecnica}
+              />
             </FormRoot.FormItemRow>
           </FormRoot.FormRow>
           <FormRoot.FormRow>
-            <FormRoot.FormItemRow xs={12} md={6}>
-              <InputApp disabled={readonly} id={ProdutoFormField.Referencia} label="Referência" maxLength={ProdutoField.MaxLength} onChange={form.onChange} value={form.values.referencia} />
+            <FormRoot.FormItemRow xs={12} md={3}>
+              <InputApp
+                disabled={readonly}
+                id={ProdutoFormField.Referencia}
+                label="Referência"
+                maxLength={ProdutoField.MaxLength}
+                onChange={form.onChange}
+                value={form.values.referencia}
+              />
+            </FormRoot.FormItemRow>
+            <FormRoot.FormItemRow xs={12} md={3}>
+              <InputApp
+                disabled={readonly}
+                id={ProdutoFormField.OrdemExibixao}
+                label="Ordem de exibição"
+                name={ProdutoFormField.OrdemExibixao}
+                onChange={(_, value) =>
+                  form.onChange(
+                    ProdutoFormField.OrdemExibixao,
+                    value === '' ? undefined : Number(value),
+                  )
+                }
+                type={InputAppType.Number}
+                value={form.values.ordemExibixao ?? ''}
+              />
             </FormRoot.FormItemRow>
             <FormRoot.FormItemRow xs={12} md={6}>
               <CategoriaDropDown
                 error={form.error(ProdutoFormField.CategoriaId)}
                 helperText={form.helperText(ProdutoFormField.CategoriaId)}
-                onChange={(_, categoria) => form.setValue({ categoria, categoriaId: categoria?.id })}
+                onChange={(_, categoria) =>
+                  form.setValue({ categoria, categoriaId: categoria?.id })
+                }
                 readonly={readonly}
                 required
                 value={form.values.categoria}
@@ -270,7 +317,10 @@ export function ProdutoFormPage({ action }: ProdutoFormPageProps) {
               <DropDownMultiSelectApp
                 id={ProdutoFormField.Pesos}
                 label="Pesos"
-                onChange={(pesos) => { form.setValue({ pesos }); atualizarVariacoes('pesoId', pesos) }}
+                onChange={(pesos) => {
+                  form.setValue({ pesos })
+                  atualizarVariacoes('pesoId', pesos)
+                }}
                 readonly={readonly}
                 url={`${ApiRoutePath.Peso}/list`}
                 values={form.values.pesos ?? []}
@@ -280,7 +330,10 @@ export function ProdutoFormPage({ action }: ProdutoFormPageProps) {
               <DropDownMultiSelectApp
                 id={ProdutoFormField.Tamanhos}
                 label="Tamanhos"
-                onChange={(tamanhos) => { form.setValue({ tamanhos }); atualizarVariacoes('tamanhoId', tamanhos) }}
+                onChange={(tamanhos) => {
+                  form.setValue({ tamanhos })
+                  atualizarVariacoes('tamanhoId', tamanhos)
+                }}
                 readonly={readonly}
                 url={`${ApiRoutePath.Tamanho}/list`}
                 values={form.values.tamanhos ?? []}
@@ -307,20 +360,47 @@ export function ProdutoFormPage({ action }: ProdutoFormPageProps) {
         <StackApp spacing={2}>
           {tabelaDePrecoId ? (
             <>
-              <TextApp color={TextAppColor.Primary} weight={TextAppWeight.SemiBold}>Tabela ativa: {tabelaDePrecoDescricao}</TextApp>
+              <TextApp color={TextAppColor.Primary} weight={TextAppWeight.SemiBold}>
+                Tabela ativa: {tabelaDePrecoDescricao}
+              </TextApp>
               {(form.values.pesos ?? []).map((peso) => {
                 const item = itensTabelaDePreco.find((current) => current.pesoId === peso.id)
-                return item && <PrecoVariacao descricao={`Peso: ${peso.descricao}`} item={item} key={`peso-${peso.id}`} onChange={(values) => atualizarItem('pesoId', peso.id, values)} readonly={readonly} />
+                return (
+                  item && (
+                    <PrecoVariacao
+                      descricao={`Peso: ${peso.descricao}`}
+                      item={item}
+                      key={`peso-${peso.id}`}
+                      onChange={(values) => atualizarItem('pesoId', peso.id, values)}
+                      readonly={readonly}
+                    />
+                  )
+                )
               })}
               {(form.values.tamanhos ?? []).map((tamanho) => {
                 const item = itensTabelaDePreco.find((current) => current.tamanhoId === tamanho.id)
-                return item && <PrecoVariacao descricao={`Tamanho: ${tamanho.descricao}`} item={item} key={`tamanho-${tamanho.id}`} onChange={(values) => atualizarItem('tamanhoId', tamanho.id, values)} readonly={readonly} />
+                return (
+                  item && (
+                    <PrecoVariacao
+                      descricao={`Tamanho: ${tamanho.descricao}`}
+                      item={item}
+                      key={`tamanho-${tamanho.id}`}
+                      onChange={(values) => atualizarItem('tamanhoId', tamanho.id, values)}
+                      readonly={readonly}
+                    />
+                  )
+                )
               })}
-              {(form.values.pesos?.length ?? 0) === 0 && (form.values.tamanhos?.length ?? 0) === 0 && (
-                <TextApp color={TextAppColor.Secondary}>Selecione pesos ou tamanhos para informar os preços.</TextApp>
-              )}
+              {(form.values.pesos?.length ?? 0) === 0 &&
+                (form.values.tamanhos?.length ?? 0) === 0 && (
+                  <TextApp color={TextAppColor.Secondary}>
+                    Selecione pesos ou tamanhos para informar os preços.
+                  </TextApp>
+                )}
             </>
-          ) : <TextApp color={TextAppColor.Secondary}>Não há uma tabela de preço ativa.</TextApp>}
+          ) : (
+            <TextApp color={TextAppColor.Secondary}>Não há uma tabela de preço ativa.</TextApp>
+          )}
         </StackApp>
       )}
     </FormRoot.Form>

@@ -42,6 +42,13 @@ export const menus: Menu[] = [
         icone: 'solar:chart-2-linear',
         filhos: [],
       },
+      {
+        id: 45,
+        nome: 'Ordenação da Loja',
+        caminho: PrivateRoutePath.OrdenacaoDaLoja,
+        icone: 'solar:sort-linear',
+        filhos: [],
+      },
     ],
   },
   {

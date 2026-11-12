@@ -22,16 +22,19 @@ const pesoInitialValues: Partial<Peso> = {
   [PesoFormField.Descricao]: '',
   [PesoFormField.LarguraReal]: undefined,
   [PesoFormField.PesoReal]: undefined,
+  [PesoFormField.OrdemExibixao]: undefined,
 }
 
 const pesoValidationSchema = new YupAdapter()
   .stringWithTests(
     PesoFormField.Descricao,
-    [{
-      name: 'maxLength',
-      message: `A descrição deve ter no máximo ${PesoField.DescricaoMaxLength} caracteres`,
-      test: (value) => !value || value.length <= PesoField.DescricaoMaxLength,
-    }],
+    [
+      {
+        name: 'maxLength',
+        message: `A descrição deve ter no máximo ${PesoField.DescricaoMaxLength} caracteres`,
+        test: (value) => !value || value.length <= PesoField.DescricaoMaxLength,
+      },
+    ],
     'Informe a descrição',
   )
   .build()
@@ -52,9 +55,8 @@ export function PesoFormPage({ action }: IFormTypes) {
         larguraReal: obterNumeroOpcional(values.larguraReal),
         pesoReal: obterNumeroOpcional(values.pesoReal),
       }
-      const response = action === FormAction.Edit
-        ? await atualizar.fetch(payload)
-        : await criar.fetch(payload)
+      const response =
+        action === FormAction.Edit ? await atualizar.fetch(payload) : await criar.fetch(payload)
 
       if (response) navigate(PrivateRoutePath.Peso)
     },
@@ -95,6 +97,19 @@ export function PesoFormPage({ action }: IFormTypes) {
             onChange={form.onChange}
             required
             value={form.values.descricao}
+          />
+        </FormRoot.FormItemRow>
+        <FormRoot.FormItemRow sm={3} xs={12}>
+          <InputApp
+            disabled={readonly}
+            id={PesoFormField.OrdemExibixao}
+            label="Ordem de exibição"
+            name={PesoFormField.OrdemExibixao}
+            onChange={(_, value) =>
+              form.onChange(PesoFormField.OrdemExibixao, value === '' ? undefined : Number(value))
+            }
+            type={InputAppType.Number}
+            value={form.values.ordemExibixao ?? ''}
           />
         </FormRoot.FormItemRow>
       </FormRoot.FormRow>

@@ -20,16 +20,19 @@ const tamanhoInitialValues: Partial<Tamanho> = {
   [TamanhoFormField.Descricao]: '',
   [TamanhoFormField.LarguraReal]: undefined,
   [TamanhoFormField.PesoReal]: undefined,
+  [TamanhoFormField.OrdemExibixao]: undefined,
 }
 
 const tamanhoValidationSchema = new YupAdapter()
   .stringWithTests(
     TamanhoFormField.Descricao,
-    [{
-      name: 'maxLength',
-      message: `A descrição deve ter no máximo ${TamanhoField.DescricaoMaxLength} caracteres`,
-      test: (value) => !value || value.length <= TamanhoField.DescricaoMaxLength,
-    }],
+    [
+      {
+        name: 'maxLength',
+        message: `A descrição deve ter no máximo ${TamanhoField.DescricaoMaxLength} caracteres`,
+        test: (value) => !value || value.length <= TamanhoField.DescricaoMaxLength,
+      },
+    ],
     'Informe a descrição',
   )
   .build()
@@ -50,9 +53,8 @@ export function TamanhoFormPage({ action }: IFormTypes) {
         larguraReal: obterNumeroOpcional(values.larguraReal),
         pesoReal: obterNumeroOpcional(values.pesoReal),
       }
-      const response = action === FormAction.Edit
-        ? await atualizar.fetch(payload)
-        : await criar.fetch(payload)
+      const response =
+        action === FormAction.Edit ? await atualizar.fetch(payload) : await criar.fetch(payload)
 
       if (response) navigate(PrivateRoutePath.Tamanho)
     },
@@ -95,19 +97,67 @@ export function TamanhoFormPage({ action }: IFormTypes) {
             value={form.values.descricao}
           />
         </FormRoot.FormItemRow>
+        <FormRoot.FormItemRow sm={3} xs={12}>
+          <InputApp
+            disabled={readonly}
+            id={TamanhoFormField.OrdemExibixao}
+            label="Ordem de exibição"
+            name={TamanhoFormField.OrdemExibixao}
+            onChange={(_, value) =>
+              form.onChange(
+                TamanhoFormField.OrdemExibixao,
+                value === '' ? undefined : Number(value),
+              )
+            }
+            type={InputAppType.Number}
+            value={form.values.ordemExibixao ?? ''}
+          />
+        </FormRoot.FormItemRow>
       </FormRoot.FormRow>
       <FormRoot.FormRow>
         <FormRoot.FormItemRow sm={3} xs={12}>
-          <InputApp disabled={readonly} id={TamanhoFormField.PesoReal} label="Peso real (kg)" name={TamanhoFormField.PesoReal} onChange={form.onChange} type={InputAppType.Number} value={form.values.pesoReal ?? ''} />
+          <InputApp
+            disabled={readonly}
+            id={TamanhoFormField.PesoReal}
+            label="Peso real (kg)"
+            name={TamanhoFormField.PesoReal}
+            onChange={form.onChange}
+            type={InputAppType.Number}
+            value={form.values.pesoReal ?? ''}
+          />
         </FormRoot.FormItemRow>
         <FormRoot.FormItemRow sm={3} xs={12}>
-          <InputApp disabled={readonly} id={TamanhoFormField.AlturaReal} label="Altura real (cm)" name={TamanhoFormField.AlturaReal} onChange={form.onChange} type={InputAppType.Number} value={form.values.alturaReal ?? ''} />
+          <InputApp
+            disabled={readonly}
+            id={TamanhoFormField.AlturaReal}
+            label="Altura real (cm)"
+            name={TamanhoFormField.AlturaReal}
+            onChange={form.onChange}
+            type={InputAppType.Number}
+            value={form.values.alturaReal ?? ''}
+          />
         </FormRoot.FormItemRow>
         <FormRoot.FormItemRow sm={3} xs={12}>
-          <InputApp disabled={readonly} id={TamanhoFormField.LarguraReal} label="Largura real (cm)" name={TamanhoFormField.LarguraReal} onChange={form.onChange} type={InputAppType.Number} value={form.values.larguraReal ?? ''} />
+          <InputApp
+            disabled={readonly}
+            id={TamanhoFormField.LarguraReal}
+            label="Largura real (cm)"
+            name={TamanhoFormField.LarguraReal}
+            onChange={form.onChange}
+            type={InputAppType.Number}
+            value={form.values.larguraReal ?? ''}
+          />
         </FormRoot.FormItemRow>
         <FormRoot.FormItemRow sm={3} xs={12}>
-          <InputApp disabled={readonly} id={TamanhoFormField.ComprimentoReal} label="Comprimento real (cm)" name={TamanhoFormField.ComprimentoReal} onChange={form.onChange} type={InputAppType.Number} value={form.values.comprimentoReal ?? ''} />
+          <InputApp
+            disabled={readonly}
+            id={TamanhoFormField.ComprimentoReal}
+            label="Comprimento real (cm)"
+            name={TamanhoFormField.ComprimentoReal}
+            onChange={form.onChange}
+            type={InputAppType.Number}
+            value={form.values.comprimentoReal ?? ''}
+          />
         </FormRoot.FormItemRow>
       </FormRoot.FormRow>
     </FormRoot.Form>

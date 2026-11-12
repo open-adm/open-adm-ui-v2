@@ -22,6 +22,12 @@ export function TamanhoPage() {
       sortable: true,
     },
     {
+      field: TamanhoFormField.OrdemExibixao,
+      headerName: 'Ordem de exibição',
+      minWidth: 10,
+      sortable: true,
+    },
+    {
       field: TamanhoFormField.PesoReal,
       headerName: 'Peso real (kg)',
       minWidth: 150,

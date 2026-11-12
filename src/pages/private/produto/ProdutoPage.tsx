@@ -11,7 +11,7 @@ import { TableIndex } from '../../../components/Tabela/TableIndex'
 import type { TypeColumns } from '../../../components/Tabela/tabelaComDragTypes'
 import { TextApp } from '../../../components/TextApp/TextApp'
 import { PrivateRoutePath } from '../../../routes/appRoutes'
-import type { Produto } from '../../../types/ProdutoTypes'
+import { ProdutoFormField, type Produto } from '../../../types/ProdutoTypes'
 
 const ProdutoTable = {
   Name: 'produtos',
@@ -21,6 +21,7 @@ const ProdutoColumnField = {
   Categoria: 'categoria.descricao',
   Descricao: 'descricao',
   Referencia: 'referencia',
+  OrdemExibixao: ProdutoFormField.OrdemExibixao,
 } as const
 
 export function ProdutoPage() {
@@ -31,29 +32,36 @@ export function ProdutoPage() {
       flex: 1,
       minWidth: 240,
       sortable: true,
-      cellRenderer: ({ data }: ICellRendererParams<Produto>) => data && (
-        <BoxApp
-          alignItems={BoxAppAlignItems.Center}
-          display={BoxAppDisplay.Flex}
-          gap="1rem"
-          height="100%"
-          justifyContent={BoxAppJustifyContent.Center}
-        >
-          <AvatarApp
-            alt={`Produto ${data.descricao}`}
-            src={data.foto}
-            sx={{ height: 30, width: 30 }}
-            variant="rounded"
+      cellRenderer: ({ data }: ICellRendererParams<Produto>) =>
+        data && (
+          <BoxApp
+            alignItems={BoxAppAlignItems.Center}
+            display={BoxAppDisplay.Flex}
+            gap="1rem"
+            height="100%"
+            justifyContent={BoxAppJustifyContent.Center}
           >
-            {data.descricao.charAt(0).toUpperCase()}
-          </AvatarApp>
-          <TextApp noWrap>{data.descricao}</TextApp>
-        </BoxApp>
-      ),
+            <AvatarApp
+              alt={`Produto ${data.descricao}`}
+              src={data.foto}
+              sx={{ height: 30, width: 30 }}
+              variant="rounded"
+            >
+              {data.descricao.charAt(0).toUpperCase()}
+            </AvatarApp>
+            <TextApp noWrap>{data.descricao}</TextApp>
+          </BoxApp>
+        ),
     },
     {
       field: ProdutoColumnField.Referencia,
       headerName: 'Referência',
+      minWidth: 140,
+      sortable: true,
+    },
+    {
+      field: ProdutoColumnField.OrdemExibixao,
+      headerName: 'Ordem de exibição',
       minWidth: 140,
       sortable: true,
     },

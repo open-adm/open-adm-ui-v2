@@ -4,7 +4,7 @@ import { BoxApp } from '../../../components/BoxApp/BoxApp'
 import {
   BoxAppAlignItems,
   BoxAppDisplay,
-  BoxAppJustifyContent
+  BoxAppJustifyContent,
 } from '../../../components/BoxApp/boxAppTypes'
 import { TableIndex } from '../../../components/Tabela/TableIndex'
 import type { TypeColumns } from '../../../components/Tabela/tabelaComDragTypes'
@@ -44,6 +44,11 @@ export function CategoriaPage() {
           <TextApp noWrap>{data.descricao}</TextApp>
         </BoxApp>
       ),
+    },
+    {
+      field: CategoriaFormField.OrdemExibixao,
+      headerName: 'Ordem de exibição',
+      sortable: true,
     },
   ]
 

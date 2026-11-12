@@ -7,6 +7,7 @@ export enum ProdutoFormField {
   Descricao = 'descricao',
   EspecificacaoTecnica = 'especificacaoTecnica',
   NovaFoto = 'novaFoto',
+  OrdemExibixao = 'ordemExibixao',
   Peso = 'peso',
   Pesos = 'pesos',
   Referencia = 'referencia',
@@ -31,6 +32,7 @@ export interface Produto {
   categoria: Categoria
   ativo: boolean
   inativoEcommerce: boolean
+  ordemExibixao?: number
   vendaSomenteComEstoqueDisponivel: boolean
 }
 
@@ -56,6 +58,7 @@ export interface ProdutoPayload {
   especificacaoTecnica?: string
   referencia?: string
   categoriaId?: string
+  ordemExibixao?: number
   tabelaDePrecoId?: string
   tamanhosIds: string[]
   pesosIds: string[]

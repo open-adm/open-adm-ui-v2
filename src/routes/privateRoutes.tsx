@@ -36,6 +36,7 @@ import { MinhaContaPage } from '../pages/private/MinhaContaPage'
 import { MinhaEmpresaPage } from '../pages/private/minhaEmpresa/MinhaEmpresaPage'
 import { MovimentoProdutoFormPage } from '../pages/private/movimentoProduto/MovimentoProdutoFormPage'
 import { MovimentoProdutoPage } from '../pages/private/movimentoProduto/MovimentoProdutoPage'
+import { OrdenacaoDaLojaPage } from '../pages/private/ordenacaoDaLoja/OrdenacaoDaLojaPage'
 import { PedidoPage } from '../pages/private/pedido/PedidoPage'
 import { PedidoFormPage } from '../pages/private/pedido/PedidoFormPage'
 import { PedidoVisualizarPage } from '../pages/private/pedido/PedidoVisualizarPage'
@@ -67,6 +68,11 @@ export type PrivateRouteConfig = {
 }
 
 export const privateRoutes: PrivateRouteConfig[] = [
+  {
+    title: 'Ordenação da Loja',
+    path: PrivateRoutePath.OrdenacaoDaLoja,
+    component: <OrdenacaoDaLojaPage />,
+  },
   {
     title: 'Link da Bio',
     path: PrivateRoutePath.LinkBio,

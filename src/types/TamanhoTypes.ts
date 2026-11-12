@@ -5,6 +5,7 @@ export enum TamanhoFormField {
   Descricao = 'descricao',
   LarguraReal = 'larguraReal',
   PesoReal = 'pesoReal',
+  OrdemExibixao = 'ordemExibixao',
 }
 
 export interface Tamanho {
@@ -18,6 +19,7 @@ export interface Tamanho {
   larguraReal?: number
   comprimentoReal?: number
   ativo: boolean
+  ordemExibixao?: number
 }
 
 export type TamanhoPayload = Partial<Tamanho>
