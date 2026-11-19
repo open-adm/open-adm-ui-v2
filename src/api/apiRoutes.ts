@@ -1,4 +1,5 @@
 export enum ApiRoutePath {
+  AvisoUsuario = '/avisos-usuarios',
   Banner = '/banners',
   LojaParceira = '/lojas-parceiras',
   LinkBio = '/link-bio',

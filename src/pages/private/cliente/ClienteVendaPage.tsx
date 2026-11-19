@@ -10,20 +10,28 @@ import { StackApp } from '../../../components/StackApp/StackApp'
 import { TableIndex } from '../../../components/Tabela/TableIndex'
 import type { TypeColumns } from '../../../components/Tabela/tabelaComDragTypes'
 import { TextApp } from '../../../components/TextApp/TextApp'
+import { useMediaQueryApp } from '../../../hook/useMediaQueryApp'
 import { useNavigationApp } from '../../../hook/useNavigationApp'
 import { useThemeApp } from '../../../hook/useThemeApp'
 import { PrivateRoutePath } from '../../../routes/appRoutes'
 import { ClienteVendaFormField, type ClienteVenda } from '../../../types/ClienteVendaTypes'
 import { formatarCnpj, formatarCpf, formatarTelefone } from '../../../utils/documentUtils'
+import { ClienteVendaAvisosModal } from './ClienteVendaAvisosModal'
+import { ClienteVendaMobileRow } from './ClienteVendaMobileRow'
 
-const ClienteVendaTable = { Name: 'clientes-vendas' } as const
+const ClienteVendaTable = { Desktop: 'clientes-vendas', Mobile: 'clientes-vendas-mobile' } as const
+const clienteVendaNumeroField = 'numero'
+const clienteVendaAvisosField = 'avisos'
 
 export function ClienteVendaPage() {
+  const { isCelular } = useMediaQueryApp()
   const { navigate } = useNavigationApp()
   const { cores } = useThemeApp()
   const { ativarInativar } = useApiClienteVenda()
   const [refresh, setRefresh] = useState(0)
   const [clienteConfirmacao, setClienteConfirmacao] = useState<ClienteVenda>()
+
+  const [clienteAvisos, setClienteAvisos] = useState<ClienteVenda>()
 
   async function alterarAcesso() {
     if (!clienteConfirmacao) return
@@ -33,9 +41,9 @@ export function ClienteVendaPage() {
     setRefresh((atual) => atual + 1)
   }
 
-  const columns: TypeColumns[] = [
+  const desktopColumns: TypeColumns[] = [
     {
-      field: 'numero',
+      field: clienteVendaNumeroField,
       headerName: 'N',
       minWidth: 10,
       sortable: true,
@@ -98,19 +106,65 @@ export function ClienteVendaPage() {
           </IconButtonComTolltip>
         ),
     },
+    {
+      field: clienteVendaAvisosField,
+      headerName: 'Avisos',
+      width: 96,
+      sortable: false,
+      cellRenderer: ({ data }: ICellRendererParams<ClienteVenda>) =>
+        data && (
+          <IconButtonComTolltip
+            aria-label={`Avisos de ${data.nome}`}
+            onClick={() => setClienteAvisos(data)}
+            tooltip="Avisos"
+          >
+            <IconApp color={cores.primary} icon="solar:bell-linear" />
+          </IconButtonComTolltip>
+        ),
+    },
+  ]
+
+  const mobileColumns: TypeColumns[] = [
+    {
+      field: clienteVendaNumeroField,
+      headerName: 'Clientes',
+      flex: 1,
+      minWidth: 280,
+      sortable: false,
+      cellStyle: { paddingRight: '0px' },
+      cellRenderer: ({ data }: ICellRendererParams<ClienteVenda>) =>
+        data && (
+          <ClienteVendaMobileRow
+            cliente={data}
+            onAlterarAcesso={() => setClienteConfirmacao(data)}
+            onAbrirAvisos={() => setClienteAvisos(data)}
+          />
+        ),
+    },
   ]
 
   return (
     <>
       <TableIndex
-        columns={columns}
+        columns={isCelular ? mobileColumns : desktopColumns}
+        desabilitarColunaAcoes={isCelular}
         desabilitarColunaAtivo
         refreshPai={refresh}
-        nomeDaTabela={ClienteVendaTable.Name}
+        nomeDaTabela={isCelular ? ClienteVendaTable.Mobile : ClienteVendaTable.Desktop}
+        preencherLargura={isCelular}
+        barraRolagemCompacta={isCelular}
+        rowHeight={isCelular ? 100 : undefined}
         url={ApiRoutePath.ClienteVenda}
         urlAdd={PrivateRoutePath.ClienteVendaAdicionar}
         urlView={PrivateRoutePath.ClienteVendaVisualizar}
       />
+      {clienteAvisos && (
+        <ClienteVendaAvisosModal
+          key={clienteAvisos.id}
+          cliente={clienteAvisos}
+          onClose={() => setClienteAvisos(undefined)}
+        />
+      )}
       <ModalChildren
         close={() => setClienteConfirmacao(undefined)}
         footerChildren={
