@@ -17,6 +17,8 @@ import { ConfiguracaoDoSistemaPage } from '../pages/private/configuracaoDoSistem
 import { ConfiguracaoMercadoPagoPage } from '../pages/private/configuracaoMercadoPago/ConfiguracaoMercadoPagoPage'
 import { EstoqueMovimentacaoPage } from '../pages/private/estoque/EstoqueMovimentacaoPage'
 import { EstoquePage } from '../pages/private/estoque/EstoquePage'
+import { RelatorioPosicaoEstoquePage } from '../pages/private/estoque/RelatorioPosicaoEstoquePage'
+import { tituloRelatorioPosicaoEstoque } from '../pages/private/estoque/imprimirRelatorioPosicaoEstoque'
 import { EmpresaPage } from '../pages/private/empresa/EmpresaPage'
 import { BonificadosPage } from '../pages/private/financeiro/BonificadosPage'
 import { FaturaPage } from '../pages/private/financeiro/FaturaPage'
@@ -471,6 +473,11 @@ export const privateRoutes: PrivateRouteConfig[] = [
     title: 'Chat',
     path: PrivateRoutePath.AtendimentoChat,
     component: <AtendimentoChatPage />,
+  },
+  {
+    title: tituloRelatorioPosicaoEstoque,
+    path: PrivateRoutePath.RelatorioPosicaoEstoque,
+    component: <RelatorioPosicaoEstoquePage />,
   },
   {
     title: 'Posição de estoque',

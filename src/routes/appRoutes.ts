@@ -111,6 +111,7 @@ export enum PrivateRoutePath {
   RelatorioPedidoPeriodo = '/vendas/relatorio-por-periodo',
   RelatorioVendaProduto = '/vendas/relatorio-venda-produto',
   Estoque = '/estoque/posicao-estoque',
+  RelatorioPosicaoEstoque = '/estoque/relatorio-posicao-estoque',
   EstoqueMovimentacao = '/estoque/posicao-estoque/editar',
   EstoqueMovimentacaoId = '/estoque/posicao-estoque/editar/:id',
   Bonificados = '/financeiro/bonificados',

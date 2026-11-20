@@ -23,6 +23,7 @@ type InputAppBaseProps = {
   placeholder?: string
   multiline?: boolean
   maxLength?: number
+  step?: number | 'any'
   rows?: number
   fullWidth?: boolean
   focus?: boolean
@@ -139,6 +140,7 @@ function renderTextField(inputType: InputAppTipoTexto): InputAppRender {
     required,
     multiline,
     maxLength,
+    step,
     rows,
     value,
     startAdornment,
@@ -168,6 +170,7 @@ function renderTextField(inputType: InputAppTipoTexto): InputAppRender {
         slotProps={{
           htmlInput: {
             maxLength,
+            step,
           },
           input: startAdornment
             ? {

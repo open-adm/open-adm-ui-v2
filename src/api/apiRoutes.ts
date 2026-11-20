@@ -4,6 +4,7 @@ export enum ApiRoutePath {
   LojaParceira = '/lojas-parceiras',
   LinkBio = '/link-bio',
   Categoria = '/categorias',
+  CategoriaEcommerce = '/ecommerce/categorias',
   Chat = '/chat',
   Cliente = '/cliente',
   Comanda = '/comanda',
@@ -103,6 +104,7 @@ export enum LoginApiRoutePath {
 }
 
 export enum CategoriaApiRoutePath {
+  ListarEcommerce = '/listar',
   Atualizar = '/update',
   Criar = '/create',
   Excluir = '/delete',
@@ -112,6 +114,7 @@ export enum CategoriaApiRoutePath {
 }
 
 export enum ProdutoApiRoutePath {
+  ListarTodos = '/all-list',
   Atualizar = '/update',
   Criar = '/create',
   Excluir = '/delete',
@@ -148,12 +151,14 @@ export enum ComandaApiRoutePath {
 }
 
 export enum ApiResourceRoutePath {
+  Listar = '/list',
   AlterarStatus = '/ativar',
   Dropdown = '/dropdown',
   Paginacao = '/paginacao',
 }
 
 export enum EstoquesApiRoutePath {
+  RelatorioPosicao = '/posicao-estoque-relatorio',
   Atualizar = '/update',
   AtualizarTodos = '/update-estoques',
   Movimentar = '/movimentar-estoque',

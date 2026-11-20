@@ -106,17 +106,18 @@ export const menus: Menu[] = [
           {
             id: 13,
             nome: 'Posição de estoque',
-            caminho: '/estoque/relatorio-posicao-estoque',
+            caminho: PrivateRoutePath.RelatorioPosicaoEstoque,
             icone: 'hugeicons:package-out-of-stock',
             filhos: [],
           },
-          {
-            id: 14,
-            nome: 'Relatório de estoque',
-            caminho: '/estoque/relatorio-estoque',
-            icone: 'tabler:report-search',
-            filhos: [],
-          },
+          // Relatório de movimentações pendente de migração. Ver MIGRATION.md.
+          // {
+          //   id: 14,
+          //   nome: 'Relatório de estoque',
+          //   caminho: '/estoque/relatorio-estoque',
+          //   icone: 'tabler:report-search',
+          //   filhos: [],
+          // },
           {
             id: 15,
             nome: 'Relatório de produção',

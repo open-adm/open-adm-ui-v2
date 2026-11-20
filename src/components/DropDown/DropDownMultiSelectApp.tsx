@@ -1,6 +1,7 @@
 import { Autocomplete, TextField } from '@mui/material'
-import { useEffect, useState } from 'react'
-import { ApiMethod, useApi } from '../../hook/useApi'
+import { useState } from 'react'
+import { ApiMethod, type TypeMethod } from '../../hook/useApi'
+import { useDropDownOptions } from './useDropDownOptions'
 
 type MultiSelectItem = {
   id: string
@@ -8,6 +9,10 @@ type MultiSelectItem = {
 }
 
 type DropDownMultiSelectAppProps<T extends MultiSelectItem> = {
+  body?: Record<string, unknown>
+  method?: TypeMethod
+  utilizarURLSearch?: boolean
+  getOptionLabel?: (option: T) => string
   id: string
   label: string
   onChange: (values: T[]) => void
@@ -17,6 +22,10 @@ type DropDownMultiSelectAppProps<T extends MultiSelectItem> = {
 }
 
 export function DropDownMultiSelectApp<T extends MultiSelectItem>({
+  body,
+  method = ApiMethod.Get,
+  utilizarURLSearch,
+  getOptionLabel = (option) => option.descricao,
   id,
   label,
   onChange,
@@ -25,50 +34,44 @@ export function DropDownMultiSelectApp<T extends MultiSelectItem>({
   values,
 }: DropDownMultiSelectAppProps<T>) {
   const [open, setOpen] = useState(false)
-  const [options, setOptions] = useState<T[]>([])
-  const { action, loading } = useApi({
-    method: ApiMethod.Get,
+  const { options, loading, pesquisar, resetarBusca } = useDropDownOptions<T>({
     url,
-    naoRenderizarResposta: true,
+    method,
+    body,
+    open,
+    readonly,
+    utilizarURLSearch,
   })
-
-  useEffect(() => {
-    if (!open || readonly) return
-
-    async function carregar() {
-      const response = await action<T[]>()
-      if (response) setOptions(response)
-    }
-
-    carregar()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, readonly])
 
   return (
     <Autocomplete
       disabled={readonly}
-      getOptionLabel={(option) => option.descricao}
+      filterOptions={
+        method !== ApiMethod.Get || utilizarURLSearch ? (options) => options : undefined
+      }
+      getOptionKey={(option) => option.id}
+      getOptionLabel={getOptionLabel}
       id={id}
       isOptionEqualToValue={(option, value) => option.id === value.id}
       loading={loading}
       multiple
       onChange={(_, newValues) => onChange(newValues)}
-      onClose={() => setOpen(false)}
+      onClose={() => {
+        setOpen(false)
+        resetarBusca()
+      }}
+      onInputChange={(_, value, reason) => {
+        if (reason === 'input' || reason === 'clear') pesquisar(value)
+      }}
       onOpen={() => setOpen(true)}
       open={open}
       options={options}
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          label={label}
-          size="small"
-        />
-      )}
+      renderInput={(params) => <TextField {...params} label={label} size="small" />}
       slotProps={{
         chip: {
           size: 'small',
           variant: 'outlined',
-          color: 'primary'
+          color: 'primary',
         },
       }}
       value={values}

@@ -1,9 +1,9 @@
 import { CircularProgress, Paper, TextField } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
-import { Fragment, useEffect, useMemo, useState } from 'react';
-import { ApiMethod, useApi, type TypeMethod } from '../../hook/useApi';
-import { useDebounce } from '../../hook/useDebounce';
+import { Fragment, useMemo, useState } from 'react';
+import { ApiMethod, type TypeMethod } from '../../hook/useApi';
 import { ButtonApp } from '../ButtonApp/ButtonApp';
+import { useDropDownOptions } from './useDropDownOptions';
 
 interface propsDropDown {
     value: any;
@@ -96,16 +96,16 @@ function CustomListbox(props: propsCustomListbox) {
 }
 
 export function DropDownAutoFetchOpenApp(props: propsDropDown) {
-    const { action, loading } = useApi({
-        method: props.method ?? 'POST',
-        url: props.url,
-        naoRenderizarResposta: true,
-        header: props.headerApi,
-    });
-    const [valuesOriginais, setValuesOriginais] = useState<any[]>([]);
-    const [search, setSearch] = useState('');
     const [open, setOpen] = useState(false);
-    const pesquisaDebounce = useDebounce(search);
+    const { options: valuesOriginais, loading, search, pesquisar, resetarBusca } = useDropDownOptions<any>({
+        method: props.method ?? ApiMethod.Post,
+        url: props.url,
+        header: props.headerApi,
+        body: { orderBy: props.orderBy, ...props.body },
+        utilizarURLSearch: props.utilizarURLSearch,
+        readonly: props.readonly,
+        open,
+    });
     const textoNaoEncontrado = props.textoNaoEncontrado ?? 'S/R';
     const labelValueSelecionado = getLabel(props?.value);
 
@@ -134,38 +134,6 @@ export function DropDownAutoFetchOpenApp(props: propsDropDown) {
             })
             .filter(Boolean)
             .join(' - ');
-    }
-
-    async function init() {
-        if (props.readonly || !open) {
-            return;
-        }
-
-        const response = await action<any>({
-            body:
-                props.method === ApiMethod.Get && props.utilizarURLSearch
-                    ? undefined
-                    : {
-                        orderBy: props.orderBy,
-                        search:
-                            pesquisaDebounce && pesquisaDebounce.length > 0
-                                ? pesquisaDebounce
-                                : undefined,
-                        ...props.body,
-                    },
-            urlParams:
-                props.method === ApiMethod.Get && props.utilizarURLSearch
-                    ? `?${new URLSearchParams({
-                        search: pesquisaDebounce,
-                    }).toString()}`
-                    : undefined,
-        });
-
-        if (Array.isArray(response?.values)) {
-            setValuesOriginais(response?.values ?? []);
-        } else if (Array.isArray(response)) {
-            setValuesOriginais(response ?? []);
-        }
     }
 
     function renderOptions(params: any, value: any) {
@@ -198,13 +166,6 @@ export function DropDownAutoFetchOpenApp(props: propsDropDown) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [idSelecionado, labelValueSelecionado, textoNaoEncontrado]);
 
-    useEffect(() => {
-        // A abertura e a pesquisa disparam o carregamento remoto das opções.
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        init();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [pesquisaDebounce, open]);
-
     return (
         <Autocomplete
             noOptionsText={'Não há registros'}
@@ -215,15 +176,14 @@ export function DropDownAutoFetchOpenApp(props: propsDropDown) {
             }}
             onClose={() => {
                 setOpen(false);
-                setSearch('');
+                resetarBusca();
             }}
             value={value}
             loading={loading}
             loadingText='Carregando...'
             getOptionLabel={(opt) => `${opt?.label || ''}`}
             onInputChange={(_, novoValor, reason) => {
-                if (reason === 'reset') return;
-                setSearch(novoValor);
+                if (reason === 'input' || reason === 'clear') pesquisar(novoValor);
             }}
             onChange={(_, newValue: any, reason) => {
                 const newV = reason !== 'clear' ? newValue : undefined;

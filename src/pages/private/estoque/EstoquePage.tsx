@@ -1,22 +1,24 @@
-import { Stack } from '@mui/material'
-import type { ICellRendererParams } from 'ag-grid-community'
 import { useState } from 'react'
 import { ApiRoutePath } from '../../../api/apiRoutes'
-import { BadgeApp } from '../../../components/BadegApp/BadgeApp'
 import { ButtonApp, ButtonAppVariant } from '../../../components/ButtonApp/ButtonApp'
 import { PesoDropDown } from '../../../components/DropDown/PesoDropDown'
 import { ProdutoDropDown } from '../../../components/DropDown/ProdutoDropDown'
 import { TamanhoDropDown } from '../../../components/DropDown/TamanhoDropDown'
 import type { MenuAppItem } from '../../../components/MenuApp/MenuApp'
 import { ModalChildren } from '../../../components/Modal/ModalChildren'
-import { TableIndex } from '../../../components/Tabela/TableIndex'
+import { StackApp } from '../../../components/StackApp/StackApp'
 import type { TypeColumns } from '../../../components/Tabela/tabelaComDragTypes'
+import { TableIndex } from '../../../components/Tabela/TableIndex'
+import { useMediaQueryApp } from '../../../hook/useMediaQueryApp'
+import { useNavigationApp } from '../../../hook/useNavigationApp'
 import { useThemeApp } from '../../../hook/useThemeApp'
 import { PrivateRoutePath } from '../../../routes/appRoutes'
-import type { Estoque, EstoqueFiltro } from '../../../types/EstoqueTypes'
+import type { EstoqueFiltro } from '../../../types/EstoqueTypes'
 import { formatarDataHoraUtcLocal } from '../../../utils/dateUtils'
+import { criarColunasEstoqueMobile, estoqueMobileRowHeight } from './estoqueMobileColumns'
+import { EstoqueQuantidadeBadge } from './EstoqueQuantidadeBadge'
 
-const EstoqueTable = { Name: 'estoques' } as const
+const EstoqueTable = { Desktop: 'estoques', Mobile: 'estoques-mobile' } as const
 
 const EstoqueColumnField = {
   DataDeAtualizacao: 'dataDeAtualizacao',
@@ -29,6 +31,8 @@ const EstoqueColumnField = {
 } as const
 
 export function EstoquePage() {
+  const { isCelular } = useMediaQueryApp()
+  const { navigate } = useNavigationApp()
   const { cores } = useThemeApp()
   const [filtros, setFiltros] = useState<EstoqueFiltro>({})
   const [filtrosTemporarios, setFiltrosTemporarios] = useState<EstoqueFiltro>({})
@@ -53,17 +57,7 @@ export function EstoquePage() {
     setFiltrosModalAberto(false)
   }
 
-  function quantidadeBadge(value: number) {
-    return (
-      <BadgeApp
-        cor={value > 0 ? cores.success : cores.warning}
-        texto={String(value)}
-        width="80px"
-      />
-    )
-  }
-
-  const columns: TypeColumns[] = [
+  const desktopColumns: TypeColumns[] = [
     { field: EstoqueColumnField.Produto, headerName: 'Produto', flex: 1, minWidth: 220 },
     { field: EstoqueColumnField.Peso, headerName: 'Peso', minWidth: 120 },
     { field: EstoqueColumnField.Tamanho, headerName: 'Tamanho', minWidth: 120 },
@@ -71,19 +65,19 @@ export function EstoquePage() {
       field: EstoqueColumnField.Quantidade,
       headerName: 'Posição do estoque',
       minWidth: 180,
-      cellRenderer: ({ data }: ICellRendererParams<Estoque>) => data && quantidadeBadge(data.quantidade),
+      cellRenderer: EstoqueQuantidadeBadge,
     },
     {
       field: EstoqueColumnField.QuantidadeDisponivel,
       headerName: 'Qtd. disponível',
       minWidth: 170,
-      cellRenderer: ({ data }: ICellRendererParams<Estoque>) => data && quantidadeBadge(data.quantidadeDisponivel),
+      cellRenderer: EstoqueQuantidadeBadge,
     },
     {
       field: EstoqueColumnField.QuantidadeReservada,
       headerName: 'Qtd. reservada',
       minWidth: 170,
-      cellRenderer: ({ data }: ICellRendererParams<Estoque>) => data && quantidadeBadge(data.quantidadeReservada),
+      cellRenderer: EstoqueQuantidadeBadge,
     },
     {
       field: EstoqueColumnField.DataDeAtualizacao,
@@ -92,6 +86,10 @@ export function EstoquePage() {
       valueFormatter: ({ value }) => formatarDataHoraUtcLocal(value),
     },
   ]
+
+  const mobileColumns = criarColunasEstoqueMobile((item) =>
+    navigate(`${PrivateRoutePath.EstoqueMovimentacao}/${item.id}`),
+  )
 
   const menuItems: MenuAppItem[] = [
     {
@@ -106,55 +104,61 @@ export function EstoquePage() {
     <ModalChildren
       action={aplicarFiltros}
       close={() => setFiltrosModalAberto(false)}
-      footerChildren={(
-        <Stack direction="row" spacing={1}>
+      footerChildren={
+        <StackApp direction="row" spacing={1}>
           <ButtonApp onClick={limparFiltros} variant={ButtonAppVariant.Outlined}>
             Limpar filtros
           </ButtonApp>
-          <ButtonApp onClick={aplicarFiltros}>
-            Aplicar filtros
-          </ButtonApp>
-        </Stack>
-      )}
+          <ButtonApp onClick={aplicarFiltros}>Aplicar filtros</ButtonApp>
+        </StackApp>
+      }
       fullWidth
       maxWidth="sm"
       open={filtrosModalAberto}
       textoButton="Aplicar filtros"
       titulo="Filtros"
     >
-      <Stack spacing={2}>
+      <StackApp spacing={2}>
         <ProdutoDropDown
-          onChange={(_, produto) => setFiltrosTemporarios((current) => ({
-            ...current,
-            produto,
-            produtoId: produto?.id,
-          }))}
+          onChange={(_, produto) =>
+            setFiltrosTemporarios((current) => ({
+              ...current,
+              produto,
+              produtoId: produto?.id,
+            }))
+          }
           value={filtrosTemporarios.produto}
         />
         <TamanhoDropDown
-          onChange={(_, tamanho) => setFiltrosTemporarios((current) => ({
-            ...current,
-            tamanho,
-            tamanhoId: tamanho?.id,
-          }))}
+          onChange={(_, tamanho) =>
+            setFiltrosTemporarios((current) => ({
+              ...current,
+              tamanho,
+              tamanhoId: tamanho?.id,
+            }))
+          }
           value={filtrosTemporarios.tamanho}
         />
         <PesoDropDown
-          onChange={(_, peso) => setFiltrosTemporarios((current) => ({
-            ...current,
-            peso,
-            pesoId: peso?.id,
-          }))}
+          onChange={(_, peso) =>
+            setFiltrosTemporarios((current) => ({
+              ...current,
+              peso,
+              pesoId: peso?.id,
+            }))
+          }
           value={filtrosTemporarios.peso}
         />
-      </Stack>
+      </StackApp>
     </ModalChildren>
   )
 
   return (
     <>
       <TableIndex
-        columns={columns}
+        barraRolagemCompacta={isCelular}
+        columns={isCelular ? mobileColumns : desktopColumns}
+        desabilitarColunaAcoes={isCelular}
         desabilitarColunaAtivo
         filtroComplementar={{
           pesoId: filtros.pesoId,
@@ -162,8 +166,10 @@ export function EstoquePage() {
           tamanhoId: filtros.tamanhoId,
         }}
         menuItems={menuItems}
-        nomeDaTabela={EstoqueTable.Name}
+        nomeDaTabela={isCelular ? EstoqueTable.Mobile : EstoqueTable.Desktop}
         orderBy="numero"
+        preencherLargura={isCelular}
+        rowHeight={isCelular ? estoqueMobileRowHeight : undefined}
         refreshPai={filtroRevision}
         url={ApiRoutePath.Estoque}
         urlEdit={PrivateRoutePath.EstoqueMovimentacao}

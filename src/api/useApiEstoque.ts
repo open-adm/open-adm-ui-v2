@@ -3,6 +3,8 @@ import type {
   AtualizarEstoquesPayload,
   Estoque,
   EstoquesDoProduto,
+  RelatorioPosicaoEstoqueFiltros,
+  RelatorioPosicaoEstoqueResultado,
 } from '../types/EstoqueTypes'
 import { ApiRoutePath, EstoquesApiRoutePath } from './apiRoutes'
 
@@ -25,7 +27,17 @@ export function useApiEstoque() {
     method: ApiMethod.Put,
     url: `${ApiRoutePath.Estoque}${EstoquesApiRoutePath.AtualizarTodos}`,
   })
+  const apiRelatorioPosicao = useApi({
+    method: ApiMethod.Post,
+    url: `${ApiRoutePath.Estoque}${EstoquesApiRoutePath.RelatorioPosicao}`,
+    naoRenderizarResposta: true,
+  })
   return {
+    relatorioPosicao: {
+      fetch: (body: RelatorioPosicaoEstoqueFiltros) =>
+        apiRelatorioPosicao.action<RelatorioPosicaoEstoqueResultado>({ body }),
+      loading: apiRelatorioPosicao.loading,
+    },
     obter: {
       fetch: (id: string) => apiObter.action<Estoque>({
         urlParams: `?id=${encodeURIComponent(id)}`,

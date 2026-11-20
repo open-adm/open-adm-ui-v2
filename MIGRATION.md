@@ -11,6 +11,9 @@
 
 ## Próximos passos
 
+- [ ] Migrar **Estoque/Relatórios/Relatório de estoque** (`/estoque/relatorio-estoque`). O menu está comentado até a migração. Preservar as duas datas obrigatórias, os filtros múltiplos de produtos, pesos e tamanhos e o download do PDF de movimentações via `POST /movimentacao-de-produto/relatorio`.
+- [ ] Verificar manualmente **Estoque/Relatórios/Posição de estoque**. Conferir a consulta com e sem filtros, as quantidades da tabela, a última movimentação e a impressão dos resultados com categoria e totalizadores.
+
 - [ ] Verificar a renegociação de fatura em `/financeiro/fatura/renegociar/:faturaId`: confirmar navegação com `faturaId` da paginação, consulta `GET /fatura/sugerir-parcelamento`, saldo e parcelas sugeridas, edição de quantidade/vencimento/meio de pagamento, payload `POST /fatura/renegociar`, resposta e atualização visível da lista. Implementada e ainda sem teste de integração ou aceitação manual.
 - [ ] Migrar **Vendas/Tabela de preço** separando criação e edição: criação envia cabeçalho e itens em um único payload; edição salva somente o cabeçalho no submit principal e persiste adição, alteração e exclusão de itens imediatamente após confirmação. O endpoint provisório de atualização individual é `PUT /item-tabela-de-preco/update`.
 - [x] Migrar **Vendas/Relatório venda produto**: filtros por data e períodos rápidos, ordenação, totalizadores, paginação, visualização responsiva e download do PDF.

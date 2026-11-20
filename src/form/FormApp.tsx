@@ -38,6 +38,7 @@ interface propsForm {
     stopPropagation?: boolean;
     overflowYContent?: BoxAppOverflow;
     responsiveMobileActions?: boolean;
+    fullHeight?: boolean;
     readonly?: boolean;
 }
 
@@ -54,6 +55,8 @@ export function FormApp(props: propsForm) {
     const readonly = props.readonly ?? props.action === FormAction.View;
     const mobileActions = Boolean(props.responsiveMobileActions && isCelular);
 
+    const mobileContentFlows = mobileActions && !props.fullHeight;
+
     return (
         <form
             onSubmit={async (e) => {
@@ -69,24 +72,24 @@ export function FormApp(props: propsForm) {
                 backgroundColor: backgroundColor.card,
                 borderRadius,
                 boxSizing: 'border-box',
-                height: mobileActions ? 'fit-content' : '100%',
+                height: mobileContentFlows ? 'fit-content' : '100%',
                 maxHeight: '100%',
                 width: '100%',
                 maxWidth: props.maxWidth,
                 minHeight: 0,
-                overflow: mobileActions ? 'auto' : 'hidden',
+                overflow: mobileContentFlows ? 'auto' : 'hidden',
             }}
         >
             <BoxApp
                 display={BoxAppDisplay.Flex}
-                flex={mobileActions ? '0 0 auto' : 1}
+                flex={mobileContentFlows ? '0 0 auto' : 1}
                 flexDirection={BoxAppFlexDirection.Column}
                 p={props.padding ?? (mobileActions ? '0 1rem 1.25rem' : '0px 1rem 1rem 1rem')}
                 boxShadow='none'
                 mt={props.marginTop ?? '10px'}
                 height={props.heigth}
                 minHeight={0}
-                overflow={mobileActions ? BoxAppOverflow.Visible : (props.overflowYContent ?? BoxAppOverflow.Auto)}
+                overflow={mobileContentFlows ? BoxAppOverflow.Visible : (props.overflowYContent ?? BoxAppOverflow.Auto)}
                 width={props.width}
             >
                 {props.children}

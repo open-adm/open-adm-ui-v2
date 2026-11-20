@@ -100,3 +100,16 @@ export interface EstoquesDoProduto {
 export interface AtualizarEstoquesPayload {
   dados: Array<Pick<Estoque, 'id' | 'quantidade'>>
 }
+
+export interface RelatorioPosicaoEstoqueFiltros {
+  produtos: string[]
+  pesos: string[]
+  tamanhos: string[]
+  categorias: string[]
+  estoqueReservadoMaiorQue?: number
+  estoqueDisponivelMenorOuIgualA?: number
+}
+
+export interface RelatorioPosicaoEstoqueResultado {
+  itens?: Estoque[] | null
+}
