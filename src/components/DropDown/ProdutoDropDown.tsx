@@ -49,16 +49,21 @@ export function ProdutoDropDown({
       utilizarURLSearch
       url={`${ApiRoutePath.Produto}${ApiResourceRoutePath.Dropdown}`}
       renderOption={(props: any, produto: any) => {
-        const { key, ...optionProps } = props;
+        const { key, ...optionProps } = props
         return (
-          <Stack key={key} {...optionProps} direction="row" spacing={1.25} sx={{ alignItems: 'center', height: '100%' }}>
+          <Stack
+            key={key}
+            {...optionProps}
+            direction="row"
+            spacing={1.25}
+            sx={{ alignItems: 'center', height: '100%' }}
+          >
             <Typography noWrap variant="body2" sx={{ fontWeight: 600, fontSize: '1rem' }}>
-              {produto.descricao}
+              {produto?.descricao}
             </Typography>
           </Stack>
-        );
+        )
       }}
-
     />
   )
 }

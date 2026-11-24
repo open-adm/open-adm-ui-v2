@@ -49,9 +49,10 @@ export function useDropDownOptions<T>({
     async function carregar() {
       const response = await action<T[] | { values: T[] }>({
         body: method === ApiMethod.Get ? undefined : { ...body, search: term || undefined },
-        urlParams: method === ApiMethod.Get && (utilizarURLSearch || search)
-          ? `?${new URLSearchParams({ search: term ?? '' })}`
-          : undefined,
+        urlParams:
+          method === ApiMethod.Get && (utilizarURLSearch || search)
+            ? `?${new URLSearchParams({ search: term ?? '' })}`
+            : undefined,
       })
       if (lastRequest.current !== request) return
 
@@ -71,7 +72,7 @@ export function useDropDownOptions<T>({
   const latestOptions = result?.key === key ? result.options : undefined
 
   return {
-    options: (search ? latestOptions ?? initialOptions : initialOptions ?? latestOptions) ?? [],
+    options: (search ? (latestOptions ?? initialOptions) : (initialOptions ?? latestOptions)) ?? [],
     loading,
     search: search?.term ?? '',
     pesquisar: (term: string) => setSearch({ term }),
