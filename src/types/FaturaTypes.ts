@@ -29,9 +29,10 @@ export const FaturaColumnField = {
   NumeroPedido: 'numeroPedido',
   NomeUsuario: 'nomeUsuario',
   Valor: 'valor',
-  ValorPagoRecebidoLiquido: 'valorPagoRecebidoLiquido',
   DescontoConcedido: 'descontoConcedido',
+  Juros: 'juros',
   ValorAPagarAReceber: 'valorAPagarAReceber',
+  ValorPagoRecebido: 'valorPagoRecebido',
   Vencimento: 'vencimento',
   Status: 'status',
 } as const
@@ -46,7 +47,6 @@ export type ParcelaPaginacao = {
   valor: number
   status: StatusParcela
   valorPagoRecebido: number
-  valorPagoRecebidoLiquido: number
   descontoConcedido: number
   valorAPagarAReceber: number
   vencimento: string
@@ -145,9 +145,14 @@ export type FaturaSugestaoParcelamento = {
   parcelas: ParcelaSugerida[] | null
 }
 
-
-export type ParcelaRenegociacao = Pick<ParcelaCriar, 'dataDeVencimento' | 'numeroDaParcela' | 'meioDePagamento' | 'valor'>
-export enum FaturaParcelaCardMode { Criar = 'criar', Renegociar = 'renegociar' }
+export type ParcelaRenegociacao = Pick<
+  ParcelaCriar,
+  'dataDeVencimento' | 'numeroDaParcela' | 'meioDePagamento' | 'valor'
+>
+export enum FaturaParcelaCardMode {
+  Criar = 'criar',
+  Renegociar = 'renegociar',
+}
 export type FaturaRenegociarPayload = {
   faturaId: string
   parcelas: ParcelaRenegociacao[]

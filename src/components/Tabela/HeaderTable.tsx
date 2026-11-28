@@ -14,7 +14,7 @@ import { MenuApp, type MenuAppItem } from '../MenuApp/MenuApp'
 type HeaderTableProps = {
   urlAdd?: string
   notBtnAdd?: boolean
-  pesquisar: (search?: string) => void
+  pesquisar: (search: string) => void
   setListarInativos: (newValue: boolean) => void
   listarInativos: boolean
   desabilitarColunaAtivo?: boolean
@@ -64,7 +64,7 @@ export function HeaderTable({
 
   function submitSearch(event?: FormEvent) {
     event?.preventDefault()
-    pesquisar(search.trim() || undefined)
+    pesquisar(search.trim())
   }
 
   function changeInactiveFilter(value: boolean) {
@@ -86,7 +86,7 @@ export function HeaderTable({
         onChange={(_, value) => {
           const newSearch = String(value ?? '')
           setSearch(newSearch)
-          if (!newSearch) pesquisar(undefined)
+          if (!newSearch) pesquisar('')
         }}
         type={InputAppType.Search}
         value={search}

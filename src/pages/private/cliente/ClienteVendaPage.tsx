@@ -87,6 +87,7 @@ export function ClienteVendaPage() {
     },
     {
       field: 'ativarAcesso',
+      valueGetter: ({ data }) => data,
       headerName: 'Ativar/Bloquear acesso',
       width: 180,
       sortable: false,
@@ -128,6 +129,7 @@ export function ClienteVendaPage() {
     {
       field: clienteVendaNumeroField,
       headerName: 'Clientes',
+      valueGetter: ({ data }) => data,
       flex: 1,
       minWidth: 280,
       sortable: false,

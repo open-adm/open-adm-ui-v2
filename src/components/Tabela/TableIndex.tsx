@@ -90,24 +90,41 @@ export function TableIndex(props: ITableIndexProps) {
     url: props.url,
   })
 
-  async function refresh(searchValue?: string) {
+  async function carregarPaginacao() {
     if (props.pausarAutoRefresh) return
 
-    const currentSearch = searchValue ?? search
-    setSearch(currentSearch)
     const response = await action<PaginacaoResponse>({
       body: {
-        skip: currentSearch ? 0 : pagina,
+        skip: pagina,
         take: quantidadePorPagina,
         listarInativo: listarInativos,
         orderBy: sorting.field,
         asc: sorting.sort === TableSortDirection.Asc,
         ...props.filtroComplementar,
-        search: currentSearch.replace(/[./-]/g, '').toUpperCase() || undefined,
+        search: search.replace(/[./-]/g, '').toUpperCase() || undefined,
       },
+      onError: () => setPaginacao(undefined),
     })
 
+    if (!response) return
+
+    const ultimaPagina = Math.max(response.totalPaginas, 1)
+    if (pagina > ultimaPagina) {
+      setPagina(ultimaPagina)
+      return
+    }
+
     setPaginacao(response)
+  }
+
+  function pesquisar(novaPesquisa: string) {
+    if (novaPesquisa === search && pagina === 1) {
+      void carregarPaginacao()
+      return
+    }
+
+    setSearch(novaPesquisa)
+    setPagina(1)
   }
 
   function excluirConfiguracaoTabela() {
@@ -116,15 +133,15 @@ export function TableIndex(props: ITableIndexProps) {
   }
 
   useEffect(() => {
-    // O carregamento remoto atualiza a paginação somente após a resposta da API.
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    refresh()
+    void carregarPaginacao()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     pagina,
     quantidadePorPagina,
     listarInativos,
     sorting,
+    search,
     props.refreshPai,
     props.pausarAutoRefresh,
   ])
@@ -146,7 +163,7 @@ export function TableIndex(props: ITableIndexProps) {
       message: `Registro ${ativo ? 'ativado' : 'inativado'} com sucesso`,
     })
 
-    if (response !== undefined) await refresh()
+    if (response !== undefined) await carregarPaginacao()
   }
 
   const defaultColumns = props.desabilitarColunaAcoes
@@ -180,7 +197,7 @@ export function TableIndex(props: ITableIndexProps) {
           setListarInativos={setListarInativos}
           urlAdd={props.urlAdd}
           notBtnAdd={props.notBtnAdd}
-          pesquisar={refresh}
+          pesquisar={pesquisar}
           desabilitarColunaAtivo={props.desabilitarColunaAtivo}
           childrenHeader={props.childrenHeader}
           acoesExtras={props.acoesExtras}

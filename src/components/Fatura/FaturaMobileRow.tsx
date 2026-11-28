@@ -9,6 +9,7 @@ import { BoxApp } from '../BoxApp/BoxApp'
 import { MenuApp, type MenuAppItem } from '../MenuApp/MenuApp'
 import { StackApp } from '../StackApp/StackApp'
 import { TextApp, TextAppColor, TextAppWeight } from '../TextApp/TextApp'
+import { calcularJurosParcela } from './calcularJurosParcela'
 import { EstornarParcelaButton } from './EstornarParcelaButton'
 import { StatusParcelaBadge } from './StatusParcelaBadge'
 
@@ -18,19 +19,20 @@ type Props = {
 }
 
 type ValorProps = {
+  cor?: TipoPaletaCorEnum
   destaque?: boolean
   label: string
   valor: number
 }
 
-function LinhaValor({ destaque = false, label, valor }: ValorProps) {
+function LinhaValor({ cor, destaque = false, label, valor }: ValorProps) {
   const { getPaletteColor } = useThemeApp()
 
   return (
     <StackApp direction="row" spacing={0.5} sx={{ justifyContent: 'space-between' }}>
       <TextApp color={TextAppColor.Secondary} fontSize="0.75rem">{label}</TextApp>
       <TextApp
-        color={destaque ? getPaletteColor(TipoPaletaCorEnum.Success) : TextAppColor.Default}
+        color={cor ? getPaletteColor(cor) : TextAppColor.Default}
         fontSize="0.75rem"
         weight={destaque ? TextAppWeight.Bold : TextAppWeight.Medium}
       >
@@ -126,9 +128,23 @@ export function FaturaMobileRow({ parcela, tipo }: Props) {
         <BoxApp borderTop="1px solid" borderColor="divider" pt={0.25}>
           <StackApp spacing={0}>
             <LinhaValor label="Valor" valor={parcela.valor} />
-            <LinhaValor label="Valor recebido" valor={parcela.valorPagoRecebidoLiquido} />
-            <LinhaValor label="Desconto" valor={parcela.descontoConcedido} />
             <LinhaValor
+              cor={TipoPaletaCorEnum.Success}
+              label="Valor recebido"
+              valor={parcela.valorPagoRecebido}
+            />
+            <LinhaValor
+              cor={TipoPaletaCorEnum.Warning}
+              label="Desconto"
+              valor={parcela.descontoConcedido}
+            />
+            <LinhaValor
+              cor={TipoPaletaCorEnum.Error}
+              label="Juros"
+              valor={calcularJurosParcela(parcela)}
+            />
+            <LinhaValor
+              cor={TipoPaletaCorEnum.Success}
               destaque
               label={tipo === TipoFatura.AReceber ? 'Valor a receber' : 'Valor a pagar'}
               valor={parcela.valorAPagarAReceber}

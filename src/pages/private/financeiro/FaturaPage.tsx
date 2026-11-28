@@ -5,6 +5,7 @@ import { ApiRoutePath } from '../../../api/apiRoutes'
 import { ButtonApp, ButtonAppVariant } from '../../../components/ButtonApp/ButtonApp'
 import { ClienteEcommerceDropDown } from '../../../components/DropDown/ClienteEcommerceDropDown'
 import { DropDownApp } from '../../../components/DropDown/DropDownApp'
+import { calcularJurosParcela } from '../../../components/Fatura/calcularJurosParcela'
 import {
   EstornarParcelaButton,
   EstornoParcelaProvider,
@@ -20,8 +21,8 @@ import { ModalChildren } from '../../../components/Modal/ModalChildren'
 import { StackApp } from '../../../components/StackApp/StackApp'
 import { TableIndex } from '../../../components/Tabela/TableIndex'
 import type { TypeColumns } from '../../../components/Tabela/tabelaComDragTypes'
-import { useThemeApp } from '../../../hook/useThemeApp'
 import { useMediaQueryApp } from '../../../hook/useMediaQueryApp'
+import { useThemeApp } from '../../../hook/useThemeApp'
 import {
   FaturaColumnField,
   StatusParcela,
@@ -48,7 +49,7 @@ const situacaoOptions = [
 ]
 
 export function FaturaPage({ tipo, urlAdd }: FaturaPageProps) {
-  const { getPaletteColor } = useThemeApp()
+  const { cores, getPaletteColor } = useThemeApp()
   const { isCelular } = useMediaQueryApp()
   const [searchParams] = useSearchParams()
   const pedidoId = searchParams.get('pedidoId') || undefined
@@ -118,18 +119,28 @@ export function FaturaPage({ tipo, urlAdd }: FaturaPageProps) {
         data ? formatMoney(data.valor) : '',
     },
     {
-      field: FaturaColumnField.ValorPagoRecebidoLiquido,
+      field: FaturaColumnField.ValorPagoRecebido,
       headerName: 'Valor recebido',
       minWidth: 155,
+      cellStyle: { color: cores.success },
       cellRenderer: ({ data }: ICellRendererParams<ParcelaPaginacao>) =>
-        data ? formatMoney(data.valorPagoRecebidoLiquido) : '',
+        data ? formatMoney(data.valorPagoRecebido) : '',
     },
     {
       field: FaturaColumnField.DescontoConcedido,
       headerName: 'Desconto',
       minWidth: 135,
+      cellStyle: { color: cores.warning },
       cellRenderer: ({ data }: ICellRendererParams<ParcelaPaginacao>) =>
         data ? formatMoney(data.descontoConcedido) : '',
+    },
+    {
+      field: FaturaColumnField.Juros,
+      headerName: 'Juros',
+      minWidth: 135,
+      cellStyle: { color: cores.error },
+      cellRenderer: ({ data }: ICellRendererParams<ParcelaPaginacao>) =>
+        data ? formatMoney(calcularJurosParcela(data)) : '',
     },
     {
       field: FaturaColumnField.ValorAPagarAReceber,
@@ -277,7 +288,7 @@ export function FaturaPage({ tipo, urlAdd }: FaturaPageProps) {
         orderBy={FaturaColumnField.NumeroFatura}
         preencherLargura={isCelular}
         barraRolagemCompacta={isCelular}
-        rowHeight={isCelular ? 164 : undefined}
+        rowHeight={isCelular ? 182 : undefined}
         refreshPai={`${refresh}-${pedidoId ?? ''}`}
         url={ApiRoutePath.Parcela}
       />
